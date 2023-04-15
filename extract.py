@@ -2,7 +2,7 @@
 import csv
 import pandas as pd
 
-def load_csv(file_name, includes, nrows: int = 100):
+def load_csv(file_name, includes, nrows: int = 1000):
     data = pd.read_csv(file_name, delimiter='|', header=0, usecols=lambda column: column in includes, nrows=nrows)
     return data
 

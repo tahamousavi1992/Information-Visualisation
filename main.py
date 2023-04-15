@@ -7,6 +7,7 @@ import pandas as pd
 import extract
 import expert_phase_pie, expert_numStudy_bar
 import expert_study_type_map
+import expert_studies_by_condition_bar
 
 # Sample data
 sample_data = pd.DataFrame({
@@ -58,11 +59,12 @@ app.layout = html.Div([
             id='piePhase-chart',
             figure=expert_phase_pie.getChart(studies)
         ),
-        dcc.Graph(
-            id='barCountry-chart',
-            figure=expert_numStudy_bar.getCountryBar(facilities)
-        ),
-        expert_study_type_map.get_expert_study_type_map(app, studies, facilities)
+        # dcc.Graph(
+        #     id='barCountry-chart',
+        #     figure=expert_numStudy_bar.getCountryBar(facilities)
+        # ),
+        expert_study_type_map.get_expert_study_type_map(app, studies, facilities),
+        expert_studies_by_condition_bar.get_chart(app, studies, conditions)
 
     ], id='expert-div', style={'display': 'none'})
 ])
