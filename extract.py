@@ -2,13 +2,13 @@
 import csv
 import pandas as pd
 
-def load_csv(file_name, includes, nrows: int = 10000):
+def load_csv(file_name, includes, nrows: int = 1000000):
     data = pd.read_csv(file_name, delimiter='|', header=0, usecols=lambda column: column in includes, nrows=nrows)
     return data
 
 
 def load_all_data():
-    studies = load_csv(file_name = 'data/studies.txt', includes = ['nct_id', 'start_date', 'completion_date', 'study_type',
+    studies = load_csv(file_name = 'data/studies.txt', includes = ['nct_id', 'study_first_submitted_date', 'completion_date', 'study_type',
     'brief_title', 'official_title' , 'overall_status' ,'phase' ,'enrollment', 'source', 'number_of_arms'])
 
     calculated_values = load_csv(file_name = 'data/calculated_values.txt', includes = ['nct_id', 'number_of_facilities'])
@@ -24,7 +24,7 @@ def load_all_data():
 
 
 
-    # studies : ['nct_id', 'start_date', 'completion_date', 'study_type','brief_title',
+    # studies : ['nct_id', 'study_first_submitted_date', 'completion_date', 'study_type','brief_title',
     #  'official_title' , 'overall_status' ,'phase' ,'enrollment', 'source', 'number_of_arms',
     #  'downcase_name', 'intervention_type', 'name', 'number_of_facilities', 'gender', 'minimum_age', 'maximum_age']
     return studies, sponsors, facilities, design_groups, conditions, interventions

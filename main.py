@@ -5,7 +5,7 @@ from dash.dependencies import Input, Output
 import plotly.graph_objs as go
 import pandas as pd
 import extract
-import expert_phase_pie, expert_numStudy_bar, expert_study_type_map, expert_studies_by_condition_bar, expert_status_bar
+import expert_phase_pie, expert_numStudy_bar, expert_study_type_map, expert_studies_by_condition_bar, expert_status_bar, expert_yearly_studies_line
 
 # Sample data
 sample_data = pd.DataFrame({
@@ -60,7 +60,8 @@ app.layout = html.Div([
         expert_study_type_map.getChart(app, studies, facilities),
         expert_studies_by_condition_bar.get_chart(app, studies, conditions),
         expert_numStudy_bar.create_studies_bar_plot(app, facilities, studies),
-        expert_status_bar.getChart(app, studies, design_groups)
+        expert_status_bar.getChart(app, studies, design_groups),
+        expert_yearly_studies_line.getChart(app, studies, sponsors),
 
     ], id='expert-div', style={'display': 'none'})
 ])
