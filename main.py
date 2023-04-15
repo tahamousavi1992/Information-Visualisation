@@ -62,7 +62,7 @@ app.layout = html.Div([
             id='barCountry-chart',
             figure=expert_numStudy_bar.getCountryBar(facilities)
         ),
-        expert_study_type_map.get_expert_study_type_map(app)
+        expert_study_type_map.get_expert_study_type_map(app, studies, facilities)
 
     ], id='expert-div', style={'display': 'none'})
 ])
