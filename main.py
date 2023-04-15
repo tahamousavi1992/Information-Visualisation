@@ -6,7 +6,7 @@ import plotly.graph_objs as go
 import pandas as pd
 import extract
 import expert_phase_pie, expert_numStudy_bar
-
+import expert_study_type_map
 
 # Sample data
 sample_data = pd.DataFrame({
@@ -61,8 +61,9 @@ app.layout = html.Div([
         dcc.Graph(
             id='barCountry-chart',
             figure=expert_numStudy_bar.getCountryBar(facilities)
-        )
-        
+        ),
+        expert_study_type_map.get_expert_study_type_map(app)
+
     ], id='expert-div', style={'display': 'none'})
 ])
 

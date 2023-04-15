@@ -1,0 +1,3 @@
+pip install ipywidgets
+pip install dash
+pip install plotly
