@@ -10,8 +10,7 @@ def getChart(app, studies, sponsors):
     # Preprocess the data
     studies = studies.dropna(subset=['study_first_submitted_date'], inplace=False)
     studies['year'] = pd.to_datetime(studies['study_first_submitted_date']).dt.year
-    unique_sponsors = sponsors['name'].unique()
-    unique_sponsors = sorted(list(unique_sponsors))
+    unique_sponsors = sorted(sponsors['name'].value_counts().nlargest(20).index.tolist(), reverse=True)
     unique_sponsors.insert(0, 'All')
 
     # App layout
