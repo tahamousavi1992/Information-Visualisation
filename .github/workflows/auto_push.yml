@@ -17,8 +17,8 @@ jobs:
 
       - name: Set up Git
         run: |
-          git config --global user.email "mahmoudi.sajjad1369@gmail.com"
-          git config --global user.name "Sajjad-Mahmoudi"
+          git config --global user.email "taha.cod@outlook.com"
+          git config --global user.name "tahamousavi1992"
 
       - name: Push to master
         run: |
