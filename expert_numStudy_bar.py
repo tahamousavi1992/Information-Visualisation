@@ -1,40 +1,88 @@
 import plotly.express as px
+import pandas as pd
 import extract
 
 
-# group by items in facilities dataframe for "countery" and count the number of studies in each country, then sort by the number of studies
-# note that in facilities dataframe one study that is identified by nct_id can have multiple rows, each row has a country in country column
-# so we need to group by nct_id and count the number of unique countries in each study
-def getCountryDist(facilities):
-    facilities = facilities.dropna(subset=['country'])
-    country_dist = facilities.groupby('nct_id')['country'].nunique().reset_index(name='counts')#.groupby('counts').size().reset_index(name='counts')
-    country_dist = country_dist.rename(columns={'counts': 'number of countries'})
-    return country_dist
+"""def getChart(facilities):
+    country_counts = facilities.groupby('country')['nct_id'].nunique().reset_index()
+    country_counts.columns = ['country', 'num_studies']
+    top_countries = country_counts.sort_values('num_studies', ascending=False).head(20)
+    other_studies = country_counts.sort_values('num_studies', ascending=False).tail(len(country_counts) - 20)['num_studies'].sum()
+    other_row = pd.DataFrame({'country': ['Other'], 'num_studies': [other_studies]})
+    top_countries = top_countries._append(other_row, ignore_index=True)
 
-# plot bar chart of the distribution of studies in each country
-def getChart(country_dist):
-    expert_bar_country = px.bar(country_dist, x='number of countries', y='counts', title='Distribution of Studies in Each Country',
-                                labels={'number of countries':'#countries', 'counts':'#studies'})
-    return expert_bar_country
+    fig = px.bar(top_countries, x='country', y='num_studies', title='Number of Studies by Country (Top 20 + Other)')
+    return fig"""
 
-# merge the two functions above to get the bar chart of the distribution of studies in each country
-def getCountryBar(facilities):
-    country_dist = getCountryDist(facilities)
-    expert_bar_country = getChart(country_dist)
-    return expert_bar_country
+import pandas as pd
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
-facilities = extract.load_all_data()[2]
-getCountryDist(facilities).head()
+def preprocess_data(facilities, studies):
+    # Replace NA values with "Unknown" in the status column
+    studies['status'] = studies['status'].fillna('Unknown')
 
-'''# Define a function to get the number of unique countries in each facility
-def getCountryDist(facilities):
-    # Group facilities by the 'nct_id' column and get the number of unique countries in each group
-    country_dist = facilities.groupby('nct_id')['country'].nunique()
-    
-    # Reset the index of the resulting DataFrame and rename the 'counts' column to 'number of countries'
-    country_dist = country_dist.reset_index(name='number of countries')
-    
-    # Group the DataFrame by the 'number of countries' column and count the number of occurrences of each value
-    country_dist = country_dist.groupby('number of countries').size().reset_index(name='counts')
-    
-    return country_dist'''
+    # Remove duplicate nct_ids
+    studies = studies.drop_duplicates(subset='nct_id')
+
+    # Merge the dataframes
+    merged_df = facilities.merge(studies[['nct_id', 'status']], on='nct_id')
+
+    # Group the data by countries and statuses
+    grouped = merged_df.groupby(['country', 'status']).nct_id.nunique().reset_index()
+
+    return grouped
+
+def create_bar_chart(facilities):
+    top_countries = facilities['country'].value_counts().head(20).index
+    facilities['country'] = facilities['country'].apply(lambda x: x if x in top_countries else 'Others')
+
+    fig = make_subplots(specs=[[{'secondary_y': True}]])
+    statuses = facilities['status'].unique()
+
+    for status in statuses:
+        filtered_df = facilities[facilities['status'] == status]
+        fig.add_trace(go.Bar(x=filtered_df['country'], y=filtered_df['nct_id'], name=status))
+
+    fig.update_layout(title="Number of Studies by Country and Status",
+                      xaxis_title="Country",
+                      yaxis_title="Number of Studies",
+                      barmode='stack')
+
+    return fig
+
+def add_dropdown_menu(fig, facilities):
+    statuses = facilities['status'].unique()
+
+    updatemenu = [{
+        "buttons": [go.layout.Updatemenu.Button(
+            args=[{'visible': [s == status for s in statuses]}],
+            label=status,
+            method="update") for status in statuses],
+        "direction": "down",
+        "showactive": True
+    }]
+
+    fig.update_layout(updatemenus=updatemenu)
+    return fig
+
+def main(data, data2):
+    preprocessed_data = preprocess_data(data, data2)
+    bar_chart = create_bar_chart(preprocessed_data)
+    bar_chart_with_dropdown = add_dropdown_menu(bar_chart, preprocessed_data)
+    return bar_chart_with_dropdown
+
+if __name__ == '__main__':
+    studies = extract.load_all_data()[0]
+    facilities = extract.load_all_data()[2]
+    fig = main(studies, facilities)
+    fig.show()
+
+else:
+    from . import preprocess_data, create_bar_chart, add_dropdown_menu
+    def main(facilities, studies):
+        preprocessed_data = preprocess_data(facilities, studies)
+        bar_chart = create_bar_chart(preprocessed_data)
+        bar_chart_with_dropdown = add_dropdown_menu(bar_chart, preprocessed_data)
+        return bar_chart_with_dropdown
+

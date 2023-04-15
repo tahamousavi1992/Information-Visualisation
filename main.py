@@ -61,7 +61,7 @@ app.layout = html.Div([
         ),
         # dcc.Graph(
         #     id='barCountry-chart',
-        #     figure=expert_numStudy_bar.getCountryBar(facilities)
+        #     figure=expert_numStudy_bar.getChart(facilities)
         # ),
         expert_study_type_map.get_expert_study_type_map(app, studies, facilities),
         expert_studies_by_condition_bar.get_chart(app, studies, conditions)
