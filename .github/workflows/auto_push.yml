@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - '**'
-      - '!main'
 
 jobs:
   auto_push:
@@ -22,6 +21,5 @@ jobs:
 
       - name: Push to master
         run: |
-          git checkout master
-          git merge --no-ff --no-edit ${{ github.head_ref }}
+          git checkout main
           git push origin main
