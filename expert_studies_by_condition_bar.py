@@ -5,7 +5,6 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 
 def get_chart(app, studies, conditions):
-    # Assuming your DataFrames are named studies and conditions
     # Merge the two DataFrames on 'nct_id'
     merged_data = pd.merge(studies, conditions, on='nct_id')
 

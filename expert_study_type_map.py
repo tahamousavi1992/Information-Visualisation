@@ -5,7 +5,7 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 
 
-def get_expert_study_type_map(app, studies, facilities):
+def getChart(app, studies, facilities):
     def get_country_code(country_name):
         try:
             country = pycountry.countries.search_fuzzy(country_name)[0]

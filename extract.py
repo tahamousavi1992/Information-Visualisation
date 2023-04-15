@@ -2,7 +2,7 @@
 import csv
 import pandas as pd
 
-def load_csv(file_name, includes, nrows: int = 1000):
+def load_csv(file_name, includes, nrows: int = 10000):
     data = pd.read_csv(file_name, delimiter='|', header=0, usecols=lambda column: column in includes, nrows=nrows)
     return data
 
@@ -20,7 +20,7 @@ def load_all_data():
     conditions = load_csv(file_name = 'data/conditions.txt', includes = ['nct_id', 'downcase_name'])
     interventions = load_csv(file_name = 'data/interventions.txt', includes = ['nct_id', 'intervention_type', 'name'])
     facilities = load_csv(file_name = 'data/facilities.txt', includes = ['nct_id', 'status','name','city','state','country'])
-    design_groups = load_csv(file_name = 'data/design_groups.txt', includes = ['nct_id', 'group_type'])
+    design_groups = load_csv(file_name = 'data/design_groups.txt', includes = ['nct_id', 'group_type']).dropna(subset=['group_type'], inplace=False)
 
 
 
