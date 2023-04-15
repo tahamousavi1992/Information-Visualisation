@@ -1,0 +1,27 @@
+name: Auto Push to Master
+
+on:
+  push:
+    branches:
+      - '**'
+      - '!master'
+
+jobs:
+  auto_push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Set up Git
+        run: |
+          git config --global user.email "mahmoudi.sajjad1369@gmail.com"
+          git config --global user.name "Sajjad-Mahmoudi"
+
+      - name: Push to master
+        run: |
+          git checkout master
+          git merge --no-ff --no-edit ${{ github.head_ref }}
+          git push origin master
