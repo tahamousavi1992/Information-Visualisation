@@ -1,0 +1,2 @@
+studies = extract.load_csv('data/studies.txt', ['nct_id', 'start_date', 'completion_date', 'study_type',
+'brief_title', 'official_title' , 'overall_status' ,'phase' ,'enrollment', 'source', 'number_of_arms'])

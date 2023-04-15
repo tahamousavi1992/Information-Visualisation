@@ -5,6 +5,8 @@ from dash.dependencies import Input, Output
 import plotly.graph_objs as go
 import pandas as pd
 import extract
+import expert_phase_pie, expert_numStudy_bar
+
 
 # Sample data
 sample_data = pd.DataFrame({
@@ -12,7 +14,7 @@ sample_data = pd.DataFrame({
     'Line': [x * 2 for x in range(10)],
     'Bar': [x ** 2 for x in range(10)]
 })
-
+studies, sponsors, facilities, design_groups, conditions, interventions = extract.load_all_data()
 app = dash.Dash(__name__)
 
 app.layout = html.Div([
@@ -51,7 +53,16 @@ app.layout = html.Div([
                 ],
                 'layout': go.Layout(title='Bar Chart')
             }
+        ),
+        dcc.Graph(
+            id='piePhase-chart',
+            figure=expert_phase_pie.getChart(studies)
+        ),
+        dcc.Graph(
+            id='barCountry-chart',
+            figure=expert_numStudy_bar.getCountryBar(facilities)
         )
+        
     ], id='expert-div', style={'display': 'none'})
 ])
 
@@ -68,6 +79,11 @@ def toggle_charts(line_clicks, bar_clicks):
         return {'display': 'block'}, {'display': 'none'}
     if 'expert-button' in changed_id :
         return {'display': 'none'}, {'display': 'block'}
+
+
+
+
+expert_phase_pie.getChart(studies)
 
 if __name__ == '__main__':
     app.run_server(debug=True)
