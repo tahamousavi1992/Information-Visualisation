@@ -1,88 +1,47 @@
+# studies_bar_plot.py
+import pandas as pd
 import plotly.express as px
-import pandas as pd
-import extract
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+from dash.dependencies import Input, Output
 
-
-"""def getChart(facilities):
-    country_counts = facilities.groupby('country')['nct_id'].nunique().reset_index()
-    country_counts.columns = ['country', 'num_studies']
-    top_countries = country_counts.sort_values('num_studies', ascending=False).head(20)
-    other_studies = country_counts.sort_values('num_studies', ascending=False).tail(len(country_counts) - 20)['num_studies'].sum()
-    other_row = pd.DataFrame({'country': ['Other'], 'num_studies': [other_studies]})
-    top_countries = top_countries._append(other_row, ignore_index=True)
-
-    fig = px.bar(top_countries, x='country', y='num_studies', title='Number of Studies by Country (Top 20 + Other)')
-    return fig"""
-
-import pandas as pd
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-
-def preprocess_data(facilities, studies):
-    # Replace NA values with "Unknown" in the status column
-    studies['status'] = studies['status'].fillna('Unknown')
-
-    # Remove duplicate nct_ids
-    studies = studies.drop_duplicates(subset='nct_id')
+def create_studies_bar_plot(app, facilities, studies):
 
     # Merge the dataframes
-    merged_df = facilities.merge(studies[['nct_id', 'status']], on='nct_id')
+    merged_df = facilities.merge(studies, on='nct_id')
 
-    # Group the data by countries and statuses
-    grouped = merged_df.groupby(['country', 'status']).nct_id.nunique().reset_index()
+    # Group the data by country and count the studies
+    country_counts = merged_df.groupby(['country', 'overall_status']).size().reset_index(name='count')
 
-    return grouped
+    # Get the top 20 countries
+    top_countries = country_counts.groupby('country')['count'].sum().nlargest(20).index.tolist()
 
-def create_bar_chart(facilities):
-    top_countries = facilities['country'].value_counts().head(20).index
-    facilities['country'] = facilities['country'].apply(lambda x: x if x in top_countries else 'Others')
+    # Create a layout with a dropdown menu and a bar plot
+    layout = html.Div([
+        dcc.Dropdown(
+            id='status-dropdown',
+            options=[{'label': status, 'value': status} for status in merged_df['overall_status'].unique()],
+            value=merged_df['overall_status'].unique()[0]
+        ),
+        dcc.Graph(id='bar-plot')
+    ])
 
-    fig = make_subplots(specs=[[{'secondary_y': True}]])
-    statuses = facilities['status'].unique()
+    # Callback function to update the bar plot based on the selected status
+    @app.callback(
+        Output('bar-plot', 'figure'),
+        [Input('status-dropdown', 'value')]
+    )
+    def update_bar_plot(selected_status):
+        filtered_df = country_counts[country_counts['overall_status'] == selected_status]
 
-    for status in statuses:
-        filtered_df = facilities[facilities['status'] == status]
-        fig.add_trace(go.Bar(x=filtered_df['country'], y=filtered_df['nct_id'], name=status))
+        top_20_filtered = filtered_df[filtered_df['country'].isin(top_countries)]
+        others_filtered = filtered_df[~filtered_df['country'].isin(top_countries)].groupby('overall_status')['count'].sum().reset_index(name='count')
+        others_filtered['country'] = 'Others'
 
-    fig.update_layout(title="Number of Studies by Country and Status",
-                      xaxis_title="Country",
-                      yaxis_title="Number of Studies",
-                      barmode='stack')
+        final_df = pd.concat([top_20_filtered, others_filtered], ignore_index=True)
 
-    return fig
+        figure = px.bar(final_df, x='country', y='count', title='Number of Studies by Country', text='count')
+        return figure
 
-def add_dropdown_menu(fig, facilities):
-    statuses = facilities['status'].unique()
-
-    updatemenu = [{
-        "buttons": [go.layout.Updatemenu.Button(
-            args=[{'visible': [s == status for s in statuses]}],
-            label=status,
-            method="update") for status in statuses],
-        "direction": "down",
-        "showactive": True
-    }]
-
-    fig.update_layout(updatemenus=updatemenu)
-    return fig
-
-def main(data, data2):
-    preprocessed_data = preprocess_data(data, data2)
-    bar_chart = create_bar_chart(preprocessed_data)
-    bar_chart_with_dropdown = add_dropdown_menu(bar_chart, preprocessed_data)
-    return bar_chart_with_dropdown
-
-if __name__ == '__main__':
-    studies = extract.load_all_data()[0]
-    facilities = extract.load_all_data()[2]
-    fig = main(studies, facilities)
-    fig.show()
-
-else:
-    from . import preprocess_data, create_bar_chart, add_dropdown_menu
-    def main(facilities, studies):
-        preprocessed_data = preprocess_data(facilities, studies)
-        bar_chart = create_bar_chart(preprocessed_data)
-        bar_chart_with_dropdown = add_dropdown_menu(bar_chart, preprocessed_data)
-        return bar_chart_with_dropdown
-
+    return layout
