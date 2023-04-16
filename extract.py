@@ -9,12 +9,10 @@ def load_csv(file_name, includes, nrows: int = 1000000):
 
 def load_all_data():
     studies = load_csv(file_name = 'data/studies.txt', includes = ['nct_id', 'study_first_submitted_date', 'completion_date', 'study_type',
-    'brief_title', 'official_title' , 'overall_status' ,'phase' ,'enrollment', 'source', 'number_of_arms'])
+    'brief_title', 'official_title' , 'overall_status' ,'phase' ,'enrollment', 'source'])
 
-    calculated_values = load_csv(file_name = 'data/calculated_values.txt', includes = ['nct_id', 'number_of_facilities'])
     eligibilities = load_csv(file_name = 'data/eligibilities.txt', includes = ['nct_id', 'gender', 'minimum_age', 'maximum_age'])
-    pd.merge(studies, calculated_values, on='nct_id', how='left')
-    pd.merge(studies, eligibilities, on='nct_id', how='left')
+    studies = pd.merge(studies, eligibilities, on='nct_id', how='left')
 
     sponsors = load_csv(file_name = 'data/sponsors.txt', includes = ['nct_id', 'agency_class', 'lead_or_collaborator', 'name'])
     conditions = load_csv(file_name = 'data/conditions.txt', includes = ['nct_id', 'downcase_name'])
@@ -25,6 +23,6 @@ def load_all_data():
 
 
     # studies : ['nct_id', 'study_first_submitted_date', 'completion_date', 'study_type','brief_title',
-    #  'official_title' , 'overall_status' ,'phase' ,'enrollment', 'source', 'number_of_arms',
-    #  'downcase_name', 'intervention_type', 'name', 'number_of_facilities', 'gender', 'minimum_age', 'maximum_age']
+    #  'official_title' , 'overall_status' ,'phase' ,'enrollment', 'source',
+    #  'downcase_name', 'intervention_type', 'name', 'gender', 'minimum_age', 'maximum_age']
     return studies, sponsors, facilities, design_groups, conditions, interventions
