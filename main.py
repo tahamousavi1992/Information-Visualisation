@@ -6,7 +6,7 @@ import plotly.graph_objs as go
 import pandas as pd
 import extract
 import expert_phase_pie, expert_numStudy_bar, expert_study_type_map, expert_studies_by_condition_bar, expert_status_bar, expert_yearly_studies_line,\
-expert_intervention_radar
+expert_intervention_radar, volunteer_studies
 
 # Sample data
 sample_data = pd.DataFrame({
@@ -24,20 +24,7 @@ app.layout = html.Div([
     ], style={'textAlign': 'center'}),
 
     html.Div([
-        dcc.Graph(
-            id='line-chart',
-            figure={
-                'data': [
-                    go.Scatter(
-                        x=sample_data['X'],
-                        y=sample_data['Line'],
-                        mode='lines+markers',
-                        name='Line Chart'
-                    )
-                ],
-                'layout': go.Layout(title='Line Chart')
-            }
-        ),
+        volunteer_studies.getChart(app, studies, sponsors, facilities, conditions, interventions)
     ], id='Volunteer-div'),
 
     html.Div([
