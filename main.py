@@ -42,19 +42,6 @@ app.layout = html.Div([
 
     html.Div([
         dcc.Graph(
-            id='bar-chart',
-            figure={
-                'data': [
-                    go.Bar(
-                        x=sample_data['X'],
-                        y=sample_data['Bar'],
-                        name='Bar Chart'
-                    )
-                ],
-                'layout': go.Layout(title='Bar Chart')
-            }
-        ),
-        dcc.Graph(
             id='piePhase-chart',
             figure=expert_phase_pie.getChart(studies)
         ),
