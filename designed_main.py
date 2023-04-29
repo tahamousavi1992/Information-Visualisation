@@ -7,10 +7,9 @@ import dash_bootstrap_components as dbc
 import extract
 import expert_phase_pie, expert_numStudy_bar, expert_study_type_map, expert_studies_by_condition_bar, expert_status_bar, expert_yearly_studies_line,\
 expert_intervention_radar, volunteer_studies
-
 from dateutil.relativedelta import relativedelta
 
-# Sample data
+
 def generate_slider_marks(min_date, max_date):
     marks = {}
     current_date = min_date.replace(month=1, day=1)
@@ -19,7 +18,6 @@ def generate_slider_marks(min_date, max_date):
         current_date += relativedelta(years=1)
 
     return marks
-
 
 studies, sponsors, facilities, design_groups, conditions, interventions = extract.load_all_data()
 app = dash.Dash(external_stylesheets=[dbc.themes.LUX])
@@ -44,17 +42,6 @@ app.layout = html.Div([
     html.Div([
         volunteer_studies.getChart(app, studies, sponsors, facilities, conditions, interventions)
     ], id='Volunteer-div'),
-
-    html.Div([
-        expert_phase_pie.getChart(app, studies),
-        expert_study_type_map.getChart(app, studies, facilities),
-        expert_studies_by_condition_bar.get_chart(app, studies, conditions),
-        # expert_numStudy_bar.create_studies_bar_plot(app, facilities, studies),
-        # expert_status_bar.getChart(app, studies, design_groups),
-        # expert_yearly_studies_line.getChart(app, studies, sponsors),
-        # expert_intervention_radar.create_radar_layout(design_groups),
-
-    ], id='expert-div', style={'display': 'none'})
 ])
 
 @app.callback(
@@ -72,4 +59,4 @@ def toggle_charts(line_clicks, bar_clicks):
         return {'display': 'none'}, {'display': 'block'}
 
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(debug=False, port=8000)
