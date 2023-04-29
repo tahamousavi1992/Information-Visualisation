@@ -6,7 +6,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import extract
 
-def create_studies_bar_plot(app, facilities, studies):
+def getChart(app, facilities, studies):
 
     # Create a layout with a dropdown menu and a bar plot
     layout = html.Div([
