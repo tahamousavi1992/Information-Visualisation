@@ -5,6 +5,7 @@ import dash_table
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import re
+import extract
 
 extended_studies_path = 'data/extended-studies.csv'
 
@@ -90,32 +91,33 @@ def getChart(app, studies, sponsors, facilities, conditions, interventions):
         [Input('studies-table', "page_current"),
         Input('studies-table', "page_size"),
         Input('studies-table', "filter_query"),
-        Input('studies-table', "sort_by")])
-    def update_table(page_current, page_size, filter_query, sort_by):
-        dff = studies
+        Input('studies-table', "sort_by"),
+        Input('date-slider', 'value')])
+    def update_table(page_current, page_size, filter_query, sort_by, date_range):
+        filtered_studies = extract.filter_by_date(studies, date_range)
         filtering_expressions = filter_query.split(' && ')
         for filter_part in filtering_expressions:
             if ' eq ' in filter_part:
                 col_name, filter_value = re.search(r"{(.*?)} eq \"?(.*?)\"?$", filter_part).groups()
                 col_name = col_name.strip()
                 filter_value = filter_value.strip()
-                dff = dff.loc[dff[col_name] == filter_value]
+                filtered_studies = filtered_studies.loc[filtered_studies[col_name] == filter_value]
             elif ' contains ' in filter_part:
                 col_name, filter_value = re.search(r"{(.*?)} contains \"?(.*?)\"?$", filter_part).groups()
                 col_name = col_name.strip()
                 filter_value = filter_value.strip()
-                dff[col_name] = dff[col_name].fillna('') # fill NaN values with empty string
-                dff = dff.loc[dff[col_name].str.contains(filter_value)]
+                filtered_studies[col_name] = filtered_studies[col_name].fillna('') # fill NaN values with empty string
+                filtered_studies = filtered_studies.loc[filtered_studies[col_name].str.contains(filter_value)]
             elif ' scontains ' in filter_part:
                 col_name, filter_value = re.search(r"{(.*?)} scontains \"?(.*?)\"?$", filter_part).groups()
                 col_name = col_name.strip()
                 filter_value = filter_value.strip()
-                dff[col_name] = dff[col_name].fillna('') # fill NaN values with empty string
-                dff = dff.loc[dff[col_name].str.contains(filter_value, case=False)]
+                filtered_studies[col_name] = filtered_studies[col_name].fillna('') # fill NaN values with empty string
+                filtered_studies = filtered_studies.loc[filtered_studies[col_name].str.contains(filter_value, case=False)]
 
 
         if sort_by and len(sort_by):
-            dff = dff.sort_values(
+            filtered_studies = filtered_studies.sort_values(
                 [col['column_id'] for col in sort_by],
                 ascending=[
                     col['direction'] == 'asc'
@@ -126,7 +128,7 @@ def getChart(app, studies, sponsors, facilities, conditions, interventions):
 
         start = page_current * page_size
         end = (page_current + 1) * page_size
-        return dff.iloc[start:end].to_dict('records')
+        return filtered_studies.iloc[start:end].to_dict('records')
 
     @app.callback(
         Output('study-details', 'children'),
