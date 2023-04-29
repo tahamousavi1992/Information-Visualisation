@@ -4,7 +4,7 @@ from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output
 import plotly.express as px
-
+import extract
 
 def getChart(app, studies, sponsors):
     # Preprocess the data
@@ -28,14 +28,13 @@ def getChart(app, studies, sponsors):
     # Callback to update line chart
     @app.callback(
         Output('yearly_studies_line_chart', 'figure'),
-        Input('sponsor_dropdown', 'value')
-    )
-    def update_line_chart(selected_sponsor):
-        if selected_sponsor == 'All':
-            filtered_studies = studies
-        else:
+        Input('sponsor_dropdown', 'value'),
+        Input('date-slider', 'value'))
+    def update_line_chart(selected_sponsor, date_range):
+        filtered_studies = extract.filter_by_date(studies, date_range)
+        if selected_sponsor != 'All':
             studies_with_selected_sponsor = sponsors[sponsors['name'] == selected_sponsor]['nct_id']
-            filtered_studies = studies[studies['nct_id'].isin(studies_with_selected_sponsor)]
+            filtered_studies = filtered_studies[filtered_studies['nct_id'].isin(studies_with_selected_sponsor)]
         yearly_study_count = filtered_studies.groupby('year')['nct_id'].count().reset_index()
         fig = px.line(yearly_study_count, x='year', y='nct_id', title='Number of Studies per Year')
         fig.update_yaxes(title_text='number of studies')

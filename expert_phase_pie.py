@@ -4,16 +4,14 @@ import dash_html_components as html
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
-import datetime
+import extract
 import pandas as pd
 
 def getChart(app, studies):
     def get_expert_pie_phase(date_range):
-        min_date = datetime.datetime.fromtimestamp(date_range[0])
-        max_date = datetime.datetime.fromtimestamp(date_range[1])
-        filtered_df = studies[(pd.to_datetime(studies['study_first_submitted_date']) >= min_date) & (pd.to_datetime(studies['study_first_submitted_date']) <= max_date)]
+        filtered_studies = extract.filter_by_date(studies, date_range)
         # Group by items in studies for "phase" and count the number of studies in each phase
-        phase_dist = filtered_df.groupby('phase').size().reset_index(name='counts')
+        phase_dist = filtered_studies.groupby('phase').size().reset_index(name='counts')
 
         # Create a new column for the percentage of studies in each phase
         phase_dist['percent'] = round(phase_dist['counts'] / phase_dist['counts'].sum() * 100, 2)

@@ -3,6 +3,7 @@ import plotly.express as px
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+import extract
 
 def getChart(app, studies, design_groups):
     # Merge 'studies' and 'design_groups' dataframes on 'nct_id'
@@ -25,11 +26,12 @@ def getChart(app, studies, design_groups):
     # Create a callback function to update the bar chart based on the selected 'group type'
     @app.callback(
         Output('bar_status_chart', 'figure'),
-        [Input('group_type_dropdown', 'value')]
-    )
-    def update_bar_status_chart(selected_group_type):
-        filtered_df = merged_df[merged_df['group_type'] == selected_group_type]
-        status_counts = filtered_df['overall_status'].value_counts().reset_index()
+        Input('group_type_dropdown', 'value'),
+        Input('date-slider', 'value'))
+    def update_bar_status_chart(selected_group_type, date_range):
+        filtered_studies = extract.filter_by_date(studies, date_range)
+        filtered_studies = merged_df[merged_df['group_type'] == selected_group_type]
+        status_counts = filtered_studies['overall_status'].value_counts().reset_index()
         status_counts.columns = ['overall_status', 'count']
         fig = px.bar(status_counts, x='overall_status', y='count', text='count')
         fig.update_xaxes(title_text='Overall Status')

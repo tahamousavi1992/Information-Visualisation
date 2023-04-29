@@ -3,7 +3,7 @@ import plotly.express as px
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-import datetime
+import extract
 
 def get_chart(app, studies, conditions):
 
@@ -29,13 +29,9 @@ def get_chart(app, studies, conditions):
         Input('num_conditions', 'value'),
         Input('date-slider', 'value'))
     def update_bar_top_conditions_chart(num_conditions, date_range):
-        min_date = datetime.datetime.fromtimestamp(date_range[0])
-        max_date = datetime.datetime.fromtimestamp(date_range[1])
-        filtered_df = studies[
-                    (pd.to_datetime(studies['study_first_submitted_date']) >= min_date) &
-                    (pd.to_datetime(studies['study_first_submitted_date']) <= max_date)]
+        filtered_studies = extract.filter_by_date(studies, date_range)
         # Merge the two DataFrames on 'nct_id'
-        merged_data = pd.merge(filtered_df, conditions, on='nct_id')
+        merged_data = pd.merge(filtered_studies, conditions, on='nct_id')
 
         # Count the number of studies for each condition
         condition_counts = merged_data.groupby('downcase_name')['nct_id'].nunique().reset_index()

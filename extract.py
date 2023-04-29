@@ -1,6 +1,7 @@
 
 import csv
 import pandas as pd
+import datetime
 
 def load_csv(file_name, includes, nrows: int = 1000000):
     data = pd.read_csv(file_name, delimiter='|', header=0, usecols=lambda column: column in includes, nrows=nrows)
@@ -26,3 +27,11 @@ def load_all_data():
     #  'official_title' , 'overall_status' ,'phase' ,'enrollment', 'source',
     #  'downcase_name', 'intervention_type', 'name', 'gender', 'minimum_age', 'maximum_age']
     return studies, sponsors, facilities, design_groups, conditions, interventions
+
+def filter_by_date(studies, date_range):
+    min_date = datetime.datetime.fromtimestamp(date_range[0])
+    max_date = datetime.datetime.fromtimestamp(date_range[1])
+    filtered_studies = studies[
+                (pd.to_datetime(studies['study_first_submitted_date']) >= min_date) &
+                (pd.to_datetime(studies['study_first_submitted_date']) <= max_date)]
+    return filtered_studies
