@@ -49,10 +49,10 @@ app.layout = html.Div([
         expert_phase_pie.getChart(app, studies),
         expert_study_type_map.getChart(app, studies, facilities),
         expert_studies_by_condition_bar.get_chart(app, studies, conditions),
-        # expert_numStudy_bar.create_studies_bar_plot(app, facilities, studies),
-        # expert_status_bar.getChart(app, studies, design_groups),
-        # expert_yearly_studies_line.getChart(app, studies, sponsors),
-        # expert_intervention_radar.create_radar_layout(design_groups),
+        expert_numStudy_bar.getChart(app, facilities, studies),
+        expert_status_bar.getChart(app, studies, design_groups),
+        expert_yearly_studies_line.getChart(app, studies, sponsors),
+        expert_intervention_radar.getChart(app, studies, design_groups),
 
     ], id='expert-div', style={'display': 'none'})
 ])
