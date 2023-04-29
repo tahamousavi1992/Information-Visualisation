@@ -3,7 +3,8 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.express as px
-
+import datetime
+import pandas as pd
 
 def getChart(app, studies, facilities):
     def get_country_code(country_name):
@@ -30,8 +31,12 @@ def getChart(app, studies, facilities):
     # app = dash.Dash(__name__)
     merged_df = studies.merge(facilities, on='nct_id')
 
-    def generate_map(study_type):
-        filtered_df = merged_df[merged_df['study_type'] == study_type]
+    def generate_map(study_type, date_range):
+        min_date = datetime.datetime.fromtimestamp(date_range[0])
+        max_date = datetime.datetime.fromtimestamp(date_range[1])
+        filtered_df = merged_df[(merged_df['study_type'] == study_type) &
+                    (pd.to_datetime(merged_df['study_first_submitted_date']) >= min_date) &
+                    (pd.to_datetime(merged_df['study_first_submitted_date']) <= max_date)]
         unique_studies_df = filtered_df.drop_duplicates(subset=['nct_id', 'country_code'])
         grouped_df = unique_studies_df.groupby(['country', 'country_code'], as_index=False).count()
 
@@ -56,9 +61,11 @@ def getChart(app, studies, facilities):
 
     @app.callback(
         Output('choropleth_map', 'figure'),
-        Input('study_type_dropdown', 'value'))
-    def update_map(study_type):
-        return generate_map(study_type)
+        Input('study_type_dropdown', 'value'),
+        Input('date-slider', 'value'))
+
+    def update_map(study_type, date_range):
+        return generate_map(study_type, date_range)
 
     return result_div
 

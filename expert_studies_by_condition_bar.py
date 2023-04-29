@@ -3,16 +3,9 @@ import plotly.express as px
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+import datetime
 
 def get_chart(app, studies, conditions):
-    # Merge the two DataFrames on 'nct_id'
-    merged_data = pd.merge(studies, conditions, on='nct_id')
-
-    # Count the number of studies for each condition
-    condition_counts = merged_data.groupby('downcase_name')['nct_id'].nunique().reset_index()
-    condition_counts.columns = ['downcase_name', 'study count']
-    condition_counts['name'] = condition_counts['downcase_name']
-    condition_counts = condition_counts.sort_values('study count', ascending=False)
 
     result = html.Div([
         html.H1("Top Conditions by Study Count"),
@@ -33,9 +26,23 @@ def get_chart(app, studies, conditions):
 
     @app.callback(
         Output('bar_top_conditions_chart', 'figure'),
-        [Input('num_conditions', 'value')]
-    )
-    def update_bar_top_conditions_chart(num_conditions):
+        Input('num_conditions', 'value'),
+        Input('date-slider', 'value'))
+    def update_bar_top_conditions_chart(num_conditions, date_range):
+        min_date = datetime.datetime.fromtimestamp(date_range[0])
+        max_date = datetime.datetime.fromtimestamp(date_range[1])
+        filtered_df = studies[
+                    (pd.to_datetime(studies['study_first_submitted_date']) >= min_date) &
+                    (pd.to_datetime(studies['study_first_submitted_date']) <= max_date)]
+        # Merge the two DataFrames on 'nct_id'
+        merged_data = pd.merge(filtered_df, conditions, on='nct_id')
+
+        # Count the number of studies for each condition
+        condition_counts = merged_data.groupby('downcase_name')['nct_id'].nunique().reset_index()
+        condition_counts.columns = ['downcase_name', 'study count']
+        condition_counts['name'] = condition_counts['downcase_name']
+        condition_counts = condition_counts.sort_values('study count', ascending=False)
+
         top_conditions = condition_counts.head(num_conditions)
 
         fig = px.bar(top_conditions, x='study count', y='name',

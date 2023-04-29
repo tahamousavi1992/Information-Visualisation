@@ -2,39 +2,56 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-import plotly.graph_objs as go
 import pandas as pd
 import extract
 import expert_phase_pie, expert_numStudy_bar, expert_study_type_map, expert_studies_by_condition_bar, expert_status_bar, expert_yearly_studies_line,\
 expert_intervention_radar, volunteer_studies
 
+from dateutil.relativedelta import relativedelta
+
 # Sample data
-sample_data = pd.DataFrame({
-    'X': range(10),
-    'Line': [x * 2 for x in range(10)],
-    'Bar': [x ** 2 for x in range(10)]
-})
+def generate_slider_marks(min_date, max_date):
+    marks = {}
+    current_date = min_date.replace(month=1, day=1)
+    while current_date <= max_date:
+        marks[int(current_date.timestamp())] = str(current_date.year)
+        current_date += relativedelta(years=1)
+
+    return marks
+
+
 studies, sponsors, facilities, design_groups, conditions, interventions = extract.load_all_data()
 app = dash.Dash(__name__)
+
+min_date = pd.to_datetime(studies['study_first_submitted_date']).min()
+max_date = pd.to_datetime(studies['study_first_submitted_date']).max()
 
 app.layout = html.Div([
     html.Div([
         html.Button('Volunteer', id='volunteer-button', n_clicks=0),
         html.Button('Expert', id='expert-button', n_clicks=0),
     ], style={'textAlign': 'center'}),
-
+    dcc.RangeSlider(
+        id='date-slider',
+        min=int(min_date.timestamp()),
+        max=int(max_date.timestamp()),
+        value=[int(min_date.timestamp()), int(max_date.timestamp())],
+        # marks={str(date): str(date) for date in studies['study_first_submitted_date'].unique()},
+        marks = generate_slider_marks(min_date, max_date),
+        step=30*24*60*60
+    ),
     html.Div([
         volunteer_studies.getChart(app, studies, sponsors, facilities, conditions, interventions)
     ], id='Volunteer-div'),
 
     html.Div([
-        expert_phase_pie.getChart(studies),
+        expert_phase_pie.getChart(app, studies),
         expert_study_type_map.getChart(app, studies, facilities),
         expert_studies_by_condition_bar.get_chart(app, studies, conditions),
-        expert_numStudy_bar.create_studies_bar_plot(app, facilities, studies),
-        expert_status_bar.getChart(app, studies, design_groups),
-        expert_yearly_studies_line.getChart(app, studies, sponsors),
-        expert_intervention_radar.create_radar_layout(design_groups),
+        # expert_numStudy_bar.create_studies_bar_plot(app, facilities, studies),
+        # expert_status_bar.getChart(app, studies, design_groups),
+        # expert_yearly_studies_line.getChart(app, studies, sponsors),
+        # expert_intervention_radar.create_radar_layout(design_groups),
 
     ], id='expert-div', style={'display': 'none'})
 ])
@@ -52,11 +69,6 @@ def toggle_charts(line_clicks, bar_clicks):
         return {'display': 'block'}, {'display': 'none'}
     if 'expert-button' in changed_id :
         return {'display': 'none'}, {'display': 'block'}
-
-
-
-
-expert_phase_pie.getChart(studies)
 
 if __name__ == '__main__':
     app.run_server(debug=True)
