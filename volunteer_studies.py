@@ -12,7 +12,7 @@ def getChart(app, studies, sponsors, facilities, conditions, interventions):
     def getExtended_studies(studies, sponsors, facilities, conditions, interventions):
         if os.path.exists(extended_studies_path):
             print('Loading extended studies from file...')
-            return pd.read_csv(extended_studies_path, delimiter='|', header=0, nrows=1000)
+            return pd.read_csv(extended_studies_path, delimiter='|', header=0)
 
         # Define format functions
         def format_sponsor(row):
@@ -96,19 +96,21 @@ def getChart(app, studies, sponsors, facilities, conditions, interventions):
         filtering_expressions = filter_query.split(' && ')
         for filter_part in filtering_expressions:
             if ' eq ' in filter_part:
-                col_name, filter_value = re.search(r"{(.*?)} eq (.*?)$", filter_part).groups()
+                col_name, filter_value = re.search(r"{(.*?)} eq \"?(.*?)\"?$", filter_part).groups()
                 col_name = col_name.strip()
                 filter_value = filter_value.strip()
                 dff = dff.loc[dff[col_name] == filter_value]
             elif ' contains ' in filter_part:
-                col_name, filter_value = re.search(r"{(.*?)} contains (.*?)$", filter_part).groups()
+                col_name, filter_value = re.search(r"{(.*?)} contains \"?(.*?)\"?$", filter_part).groups()
                 col_name = col_name.strip()
                 filter_value = filter_value.strip()
+                dff[col_name] = dff[col_name].fillna('') # fill NaN values with empty string
                 dff = dff.loc[dff[col_name].str.contains(filter_value)]
             elif ' scontains ' in filter_part:
-                col_name, filter_value = re.search(r"{(.*?)} scontains (.*?)$", filter_part).groups()
+                col_name, filter_value = re.search(r"{(.*?)} scontains \"?(.*?)\"?$", filter_part).groups()
                 col_name = col_name.strip()
                 filter_value = filter_value.strip()
+                dff[col_name] = dff[col_name].fillna('') # fill NaN values with empty string
                 dff = dff.loc[dff[col_name].str.contains(filter_value, case=False)]
 
 
