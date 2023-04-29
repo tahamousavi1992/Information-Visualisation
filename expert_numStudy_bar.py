@@ -19,6 +19,7 @@ def create_studies_bar_plot(app, facilities, studies):
 
     # Create a layout with a dropdown menu and a bar plot
     layout = html.Div([
+        html.H1("Studies by Country"),
         dcc.Dropdown(
             id='status-dropdown',
             options=[{'label': status, 'value': status} for status in merged_df['overall_status'].unique()],

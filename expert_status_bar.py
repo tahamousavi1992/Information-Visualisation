@@ -13,6 +13,7 @@ def getChart(app, studies, design_groups):
 
     # Define the layout of the app
     result = html.Div([
+        html.H1("Studies Status by Group Type"),
         dcc.Dropdown(
             id='group_type_dropdown',
             options=[{'label': group_type, 'value': group_type} for group_type in unique_group_types],

@@ -16,6 +16,7 @@ def getChart(app, studies, sponsors):
 
     # App layout
     result = html.Div([
+        html.H1("Yearly Studies Line Chart"),
         dcc.Dropdown(
             id='sponsor_dropdown',
             options=[{'label': s, 'value': s} for s in unique_sponsors],

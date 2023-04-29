@@ -28,5 +28,6 @@ def create_radar_layout(design_groups: pd.DataFrame) -> html.Div:
 
     # Return the layout containing the radar plot
     return html.Div([
+        html.H1("Radar Chart of Group Types"),
         dcc.Graph(id='intervention-radar-plot', figure=fig)
     ])

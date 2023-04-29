@@ -12,7 +12,7 @@ def getChart(app, studies, sponsors, facilities, conditions, interventions):
     def getExtended_studies(studies, sponsors, facilities, conditions, interventions):
         if os.path.exists(extended_studies_path):
             print('Loading extended studies from file...')
-            return pd.read_csv(extended_studies_path, delimiter='|', header=0)
+            return pd.read_csv(extended_studies_path, delimiter='|', header=0, nrows=1000)
 
         # Define format functions
         def format_sponsor(row):

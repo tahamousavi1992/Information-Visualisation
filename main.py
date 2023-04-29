@@ -28,10 +28,7 @@ app.layout = html.Div([
     ], id='Volunteer-div'),
 
     html.Div([
-        dcc.Graph(
-            id='piePhase-chart',
-            figure=expert_phase_pie.getChart(studies)
-        ),
+        expert_phase_pie.getChart(studies),
         expert_study_type_map.getChart(app, studies, facilities),
         expert_studies_by_condition_bar.get_chart(app, studies, conditions),
         expert_numStudy_bar.create_studies_bar_plot(app, facilities, studies),
