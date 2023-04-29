@@ -22,7 +22,7 @@ def generate_slider_marks(min_date, max_date):
 
 
 studies, sponsors, facilities, design_groups, conditions, interventions = extract.load_all_data()
-app = dash.Dash(external_stylesheets=[dbc.themes.LUX])
+app = dash.Dash(__name__)
 
 min_date = pd.to_datetime(studies['study_first_submitted_date']).min()
 max_date = pd.to_datetime(studies['study_first_submitted_date']).max()
