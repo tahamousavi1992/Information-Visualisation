@@ -11,6 +11,7 @@ def load_csv(file_name, includes, nrows: int = 1000000):
 def load_all_data():
     studies = load_csv(file_name = 'data/studies.txt', includes = ['nct_id', 'study_first_submitted_date', 'completion_date', 'study_type',
     'brief_title', 'official_title' , 'overall_status' ,'phase' ,'enrollment', 'source'])
+    studies.dropna(subset=['study_type'], inplace=True)
 
     eligibilities = load_csv(file_name = 'data/eligibilities.txt', includes = ['nct_id', 'gender', 'minimum_age', 'maximum_age'])
     studies = pd.merge(studies, eligibilities, on='nct_id', how='left')
@@ -28,10 +29,15 @@ def load_all_data():
     #  'downcase_name', 'intervention_type', 'name', 'gender', 'minimum_age', 'maximum_age']
     return studies, sponsors, facilities, design_groups, conditions, interventions
 
-def filter_by_date(studies, date_range):
+def filter_by_date(studies, date_range, study_type, study_gender):
     min_date = datetime.datetime.fromtimestamp(date_range[0])
     max_date = datetime.datetime.fromtimestamp(date_range[1])
+    gender = study_gender
+    if study_gender == 'Both male and female':
+        gender = 'All'
     filtered_studies = studies[
+                (study_type == None or study_type == 'All' or  studies['study_type'] == study_type) &
+                (study_gender == None or study_gender == 'All' or  studies['gender'] == gender) &
                 (pd.to_datetime(studies['study_first_submitted_date']) >= min_date) &
                 (pd.to_datetime(studies['study_first_submitted_date']) <= max_date)]
     return filtered_studies

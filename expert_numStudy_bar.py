@@ -10,7 +10,7 @@ def getChart(app, facilities, studies):
 
     # Create a layout with a dropdown menu and a bar plot
     layout = html.Div([
-        html.H1("Studies by Country"),
+        html.H3("Studies by Country"),
         dcc.Dropdown(
             id='status-dropdown',
             options=[{'label': status, 'value': status} for status in studies['overall_status'].unique()],
@@ -23,9 +23,11 @@ def getChart(app, facilities, studies):
     @app.callback(
         Output('bar-plot', 'figure'),
         Input('status-dropdown', 'value'),
-        Input('date-slider', 'value'))
-    def update_bar_plot(selected_status, date_range):
-        filtered_studies = extract.filter_by_date(studies, date_range)
+        Input('date-slider', 'value'),
+        Input('study_type_dropdown', 'value'),
+        Input('study_gender_dropdown', 'value'))
+    def update_bar_plot(selected_status, date_range, study_type, study_gender):
+        filtered_studies = extract.filter_by_date(studies, date_range, study_type, study_gender)
         # Merge the dataframes
         merged_df = facilities.merge(filtered_studies, on='nct_id')
         # Group the data by country and count the studies

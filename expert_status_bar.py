@@ -4,6 +4,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import extract
+import dash_bootstrap_components as dbc
 
 def getChart(app, studies, design_groups):
     # Merge 'studies' and 'design_groups' dataframes on 'nct_id'
@@ -13,13 +14,22 @@ def getChart(app, studies, design_groups):
     unique_group_types = design_groups['group_type'].unique()
 
     # Define the layout of the app
-    result = html.Div([
-        html.H1("Studies Status by Group Type"),
-        dcc.Dropdown(
-            id='group_type_dropdown',
-            options=[{'label': group_type, 'value': group_type} for group_type in unique_group_types],
-            value=unique_group_types[0]
-        ),
+    # Define the layout of the app
+    result = dbc.Col([
+        html.H3("Studies Status by Group Type"),
+        dbc.Row([
+            dbc.Col([
+                dbc.Label(' Group Type: '),
+            ], width={"size": 2}),
+            dbc.Col([
+                dcc.Dropdown(
+                    id='group_type_dropdown',
+                    options=[{'label': group_type, 'value': group_type} for group_type in unique_group_types],
+                    value=unique_group_types[0]
+                ),
+            ], width={"size": 5}),
+        ]),
+
         dcc.Graph(id='bar_status_chart')
     ])
 
@@ -27,10 +37,12 @@ def getChart(app, studies, design_groups):
     @app.callback(
         Output('bar_status_chart', 'figure'),
         Input('group_type_dropdown', 'value'),
-        Input('date-slider', 'value'))
-    def update_bar_status_chart(selected_group_type, date_range):
-        filtered_studies = extract.filter_by_date(studies, date_range)
-        filtered_studies = merged_df[merged_df['group_type'] == selected_group_type]
+        Input('date-slider', 'value'),
+        Input('study_type_dropdown', 'value'),
+        Input('study_gender_dropdown', 'value'))
+    def update_bar_status_chart(selected_group_type, date_range, study_type, study_gender):
+        filtered_studies = extract.filter_by_date(merged_df, date_range, study_type, study_gender)
+        filtered_studies = filtered_studies[filtered_studies['group_type'] == selected_group_type]
         status_counts = filtered_studies['overall_status'].value_counts().reset_index()
         status_counts.columns = ['overall_status', 'count']
         fig = px.bar(status_counts, x='overall_status', y='count', text='count')

@@ -8,7 +8,7 @@ import extract
 def get_chart(app, studies, conditions):
 
     result = html.Div([
-        html.H1("Top Conditions by Study Count"),
+        html.H3("Top Conditions by Study Count"),
         dcc.Dropdown(
             id='num_conditions',
             options=[
@@ -27,9 +27,11 @@ def get_chart(app, studies, conditions):
     @app.callback(
         Output('bar_top_conditions_chart', 'figure'),
         Input('num_conditions', 'value'),
-        Input('date-slider', 'value'))
-    def update_bar_top_conditions_chart(num_conditions, date_range):
-        filtered_studies = extract.filter_by_date(studies, date_range)
+        Input('date-slider', 'value'),
+        Input('study_type_dropdown', 'value'),
+        Input('study_gender_dropdown', 'value'))
+    def update_bar_top_conditions_chart(num_conditions, date_range, study_type, study_gender):
+        filtered_studies = extract.filter_by_date(studies, date_range, study_type, study_gender)
         # Merge the two DataFrames on 'nct_id'
         merged_data = pd.merge(filtered_studies, conditions, on='nct_id')
 

@@ -94,7 +94,7 @@ def getChart(app, studies, sponsors, facilities, conditions, interventions):
         Input('studies-table', "sort_by"),
         Input('date-slider', 'value')])
     def update_table(page_current, page_size, filter_query, sort_by, date_range):
-        filtered_studies = extract.filter_by_date(studies, date_range)
+        filtered_studies = extract.filter_by_date(studies, date_range, None, None)
         filtering_expressions = filter_query.split(' && ')
         for filter_part in filtering_expressions:
             if ' eq ' in filter_part:

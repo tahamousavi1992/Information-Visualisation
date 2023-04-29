@@ -8,8 +8,8 @@ import extract
 import pandas as pd
 
 def getChart(app, studies):
-    def get_expert_pie_phase(date_range):
-        filtered_studies = extract.filter_by_date(studies, date_range)
+    def get_expert_pie_phase(date_range, study_type, study_gender):
+        filtered_studies = extract.filter_by_date(studies, date_range, study_type, study_gender)
         # Group by items in studies for "phase" and count the number of studies in each phase
         phase_dist = filtered_studies.groupby('phase').size().reset_index(name='counts')
 
@@ -22,30 +22,30 @@ def getChart(app, studies):
         return expert_pie_phase
 
     # Define the layout of the app
-    result = dbc.Container(
+    result = dbc.Col(
         [
             dbc.Row(
                 dbc.Col(
-                    html.H1("Expert Analysis: Clinical Trial Phases"),
-                    width={"size": 3, "offset": 2}
+                    html.H3("Expert Analysis: Clinical Trial Phases"),
+                    width={"size": 12}
                 )
             ),
             dbc.Row(
                 dbc.Col(
                     dcc.Graph(id='pie_chart'),
-                    width={"size": 2, "offset": 3}
+                    width={"size": 12}
                 )
             )
         ],
-        fluid=True
     )
 
     @app.callback(
     Output('pie_chart', 'figure'),
-    Input('date-slider', 'value')
-    )
-    def update_pie_chart(date_range):
-        return get_expert_pie_phase(date_range)
+    Input('date-slider', 'value'),
+    Input('study_type_dropdown', 'value'),
+    Input('study_gender_dropdown', 'value'))
+    def update_pie_chart(date_range, study_type, study_gender):
+        return get_expert_pie_phase(date_range, study_type, study_gender)
 
     return result
 

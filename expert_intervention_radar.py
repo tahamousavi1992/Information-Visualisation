@@ -3,11 +3,12 @@ import plotly.graph_objects as go
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+import dash_bootstrap_components as dbc
 import extract
 
 def getChart(app, studies: pd.DataFrame, design_groups: pd.DataFrame) -> html.Div:
-    def get_intervention_radar_plot(date_range):
-        filtered_studies = extract.filter_by_date(studies, date_range)
+    def get_intervention_radar_plot(date_range, study_type, study_gender):
+        filtered_studies = extract.filter_by_date(studies, date_range, study_type, study_gender)
         merged_df = design_groups.merge(filtered_studies, on='nct_id')
         # Group the dataframe by 'intervention_type' and count the number of 'nct_id'
         counts = merged_df.groupby('group_type')['nct_id'].count().reset_index()
@@ -32,16 +33,18 @@ def getChart(app, studies: pd.DataFrame, design_groups: pd.DataFrame) -> html.Di
         return fig
 
     # Return the layout containing the radar plot
-    result =  html.Div([
-        html.H1("Radar Chart of Group Types"),
+    result =  dbc.Col(html.Div([
+        html.H3("Radar Chart of Group Types"),
         dcc.Graph(id='intervention-radar-plot')
-    ])
+    ]),
+    )
 
     @app.callback(
-    Output('intervention-radar-plot', 'figure'),
-    Input('date-slider', 'value')
-    )
-    def update_pie_chart(date_range):
-        return get_intervention_radar_plot(date_range)
+        Output('intervention-radar-plot', 'figure'),
+        Input('date-slider', 'value'),
+        Input('study_type_dropdown', 'value'),
+        Input('study_gender_dropdown', 'value'))
+    def update_pie_chart(date_range, study_type, study_gender):
+        return get_intervention_radar_plot(date_range, study_type, study_gender)
 
     return result

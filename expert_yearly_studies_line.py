@@ -1,10 +1,10 @@
-
 import pandas as pd
 from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output
 import plotly.express as px
 import extract
+import dash_bootstrap_components as dbc
 
 def getChart(app, studies, sponsors):
     # Preprocess the data
@@ -15,13 +15,20 @@ def getChart(app, studies, sponsors):
     unique_sponsors.insert(0, 'All')
 
     # App layout
-    result = html.Div([
-        html.H1("Yearly Studies Line Chart"),
-        dcc.Dropdown(
-            id='sponsor_dropdown',
-            options=[{'label': s, 'value': s} for s in unique_sponsors],
-            value='All'
-        ),
+    result = dbc.Col([
+        html.H3("Yearly Studies Line Chart"),
+        dbc.Row([
+            dbc.Col([
+                dbc.Label(' Sponsor : '),
+            ], width={"size": 2}),
+            dbc.Col([
+                dcc.Dropdown(
+                    id='sponsor_dropdown',
+                    options=[{'label': s, 'value': s} for s in unique_sponsors],
+                    value='All'
+                ),
+            ], width={"size": 5}),
+        ]),
         dcc.Graph(id='yearly_studies_line_chart')
     ])
 
@@ -29,9 +36,11 @@ def getChart(app, studies, sponsors):
     @app.callback(
         Output('yearly_studies_line_chart', 'figure'),
         Input('sponsor_dropdown', 'value'),
-        Input('date-slider', 'value'))
-    def update_line_chart(selected_sponsor, date_range):
-        filtered_studies = extract.filter_by_date(studies, date_range)
+        Input('date-slider', 'value'),
+        Input('study_type_dropdown', 'value'),
+        Input('study_gender_dropdown', 'value'))
+    def update_line_chart(selected_sponsor, date_range, study_type, study_gender):
+        filtered_studies = extract.filter_by_date(studies, date_range, study_type, study_gender)
         if selected_sponsor != 'All':
             studies_with_selected_sponsor = sponsors[sponsors['name'] == selected_sponsor]['nct_id']
             filtered_studies = filtered_studies[filtered_studies['nct_id'].isin(studies_with_selected_sponsor)]
