@@ -4,6 +4,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import extract
+import colorlover as cl
 import dash_bootstrap_components as dbc
 
 def getChart(app, studies, design_groups):
@@ -39,15 +40,28 @@ def getChart(app, studies, design_groups):
         Input('date-slider', 'value'),
         Input('study_type_dropdown', 'value'),
         Input('study_gender_dropdown', 'value'))
+    
     def update_bar_status_chart(selected_group_type, date_range, study_type, study_gender):
         filtered_studies = extract.filter_by_date(merged_df, date_range, study_type, study_gender)
         filtered_studies = filtered_studies[filtered_studies['group_type'] == selected_group_type]
         status_counts = filtered_studies['overall_status'].value_counts().reset_index()
         status_counts.columns = ['overall_status', 'count']
         fig = px.bar(status_counts, x='overall_status', y='count', text='count')
-        fig.update_xaxes(title_text='Overall Status')
+
+        # Update the plot layout
+        fig.update_layout(showlegend=False, yaxis={'categoryorder': 'total ascending'},
+                          plot_bgcolor='#f7f7f7', margin=dict(l=100, r=20, t=70, b=70), 
+                          xaxis_title='Status', yaxis_title='Number of Studies')
+
+        colors = cl.scales['7']['qual']['Pastel1']
+        # Update the trace colors and text positioning
+        fig.update_traces(marker_color=colors, texttemplate='%{text:.2s}')
+
+        # Add a grid to the plot
+        fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='lightgrey')
+
         fig.update_traces(
-            hovertemplate="Overall Status: %{x}<br>Count: %{y}"
+            hovertemplate="Status: %{x}<br>#Studies: %{y}"
         )
         return fig
 
