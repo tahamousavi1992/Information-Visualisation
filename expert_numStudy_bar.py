@@ -12,7 +12,7 @@ def getChart(app, facilities, studies):
 
     # Create a layout with a dropdown menu and a bar plot
     layout = dbc.Row([
-        html.H3("Studies by Country"),
+        html.H3("Number of Studies Per Country"),
         dbc.Col([
             dbc.Row([
                 dbc.Col([
@@ -41,7 +41,7 @@ def getChart(app, facilities, studies):
         Input('date-slider', 'value'),
         Input('study_type_dropdown', 'value'),
         Input('study_gender_dropdown', 'value'))
-    
+
     def update_bar_plot(selected_status, date_range, study_type, study_gender):
         filtered_studies = extract.filter_by_date(studies, date_range, study_type, study_gender)
         # Merge the dataframes
@@ -66,7 +66,7 @@ def getChart(app, facilities, studies):
 
         fig.update_layout(showlegend=False, plot_bgcolor='#f7f7f7', margin=dict(l=100, r=20, t=70, b=70), xaxis_title='Top 20 Countries',
                            yaxis_title='Number of Studies')
-        
+
         # Update the trace colors and text positioning
         fig.update_traces(texttemplate='%{text:.2s}', textposition='outside')
 

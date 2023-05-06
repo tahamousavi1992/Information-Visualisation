@@ -16,8 +16,7 @@ def getChart(app, studies):
         # Create a new column for the percentage of studies in each phase
         phase_dist['percent'] = round(phase_dist['counts'] / phase_dist['counts'].sum() * 100, 2)
 
-        expert_pie_phase = px.pie(phase_dist, values='percent', names='phase', 
-                                title='Percentage Distribution of Studies in Each Phase',
+        expert_pie_phase = px.pie(phase_dist, values='percent', names='phase',
                                 hover_data=['counts'], labels={'counts': '# Studies'})
 
         # Define a colorblind-friendly color palette with 7 colors
@@ -28,7 +27,7 @@ def getChart(app, studies):
 
         # Update the layout
         expert_pie_phase.update_layout(title={'font': {'size': 24}}, font={'size': 16}, legend={'font': {'size': 14}}, plot_bgcolor='#f7f7f7')
-        
+
         return expert_pie_phase
 
     # Define the layout of the app
@@ -36,7 +35,7 @@ def getChart(app, studies):
         [
             dbc.Row(
                 dbc.Col(
-                    html.H3("Expert Analysis: Clinical Trial Phases"),
+                    html.H3("Percentage Distribution of Studies in Each Phase"),
                     width={"size": 12}
                 )
             ),

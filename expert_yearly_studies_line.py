@@ -16,7 +16,7 @@ def getChart(app, studies, sponsors):
 
     # App layout
     result = dbc.Col([
-        html.H3("Yearly Studies Line Chart"),
+        html.H3("Number of Studies Per Year"),
         dbc.Row([
             dbc.Col([
                 dbc.Label(' Sponsor : '),
@@ -39,7 +39,7 @@ def getChart(app, studies, sponsors):
         Input('date-slider', 'value'),
         Input('study_type_dropdown', 'value'),
         Input('study_gender_dropdown', 'value'))
-    
+
     def update_line_chart(selected_sponsor, date_range, study_type, study_gender):
         filtered_studies = extract.filter_by_date(studies, date_range, study_type, study_gender)
         if selected_sponsor != 'All':
@@ -47,7 +47,7 @@ def getChart(app, studies, sponsors):
             filtered_studies = filtered_studies[filtered_studies['nct_id'].isin(studies_with_selected_sponsor)]
         yearly_study_count = filtered_studies.groupby('year')['nct_id'].count().reset_index()
 
-        fig = px.line(yearly_study_count, x='year', y='nct_id', title='#Studies/Year for {}'.format(selected_sponsor))
+        fig = px.line(yearly_study_count, x='year', y='nct_id')
         fig.update_yaxes(title_text='Number of Studies')
         fig.update_xaxes(title_text='Year')
         fig.update_traces(

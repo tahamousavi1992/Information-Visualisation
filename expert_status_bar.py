@@ -17,7 +17,7 @@ def getChart(app, studies, design_groups):
     # Define the layout of the app
     # Define the layout of the app
     result = dbc.Col([
-        html.H3("Studies Status by Group Type"),
+        html.H3("Number of Studies Per Status"),
         dbc.Row([
             dbc.Col([
                 dbc.Label(' Group Type: '),
@@ -40,7 +40,7 @@ def getChart(app, studies, design_groups):
         Input('date-slider', 'value'),
         Input('study_type_dropdown', 'value'),
         Input('study_gender_dropdown', 'value'))
-    
+
     def update_bar_status_chart(selected_group_type, date_range, study_type, study_gender):
         filtered_studies = extract.filter_by_date(merged_df, date_range, study_type, study_gender)
         filtered_studies = filtered_studies[filtered_studies['group_type'] == selected_group_type]
@@ -50,7 +50,7 @@ def getChart(app, studies, design_groups):
 
         # Update the plot layout
         fig.update_layout(showlegend=False, yaxis={'categoryorder': 'total ascending'},
-                          plot_bgcolor='#f7f7f7', margin=dict(l=100, r=20, t=70, b=70), 
+                          plot_bgcolor='#f7f7f7', margin=dict(l=100, r=20, t=70, b=70),
                           xaxis_title='Status', yaxis_title='Number of Studies')
 
         colors = cl.scales['7']['qual']['Pastel1']
@@ -59,7 +59,7 @@ def getChart(app, studies, design_groups):
 
         # Add a grid to the plot
         fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='lightgrey')
-        
+
         fig.update_traces(hovertemplate="Status: %{x}<br>#Studies: %{y}")
         return fig
 
