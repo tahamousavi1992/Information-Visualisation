@@ -5,18 +5,31 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import extract
-
+import dash_bootstrap_components as dbc
 def getChart(app, facilities, studies):
 
     # Create a layout with a dropdown menu and a bar plot
-    layout = html.Div([
+    layout = dbc.Row([
         html.H3("Studies by Country"),
-        dcc.Dropdown(
-            id='status-dropdown',
-            options=[{'label': status, 'value': status} for status in studies['overall_status'].unique()],
-            value=studies['overall_status'].unique()[0]
-        ),
-        dcc.Graph(id='bar-plot')
+        dbc.Col([
+            dbc.Row([
+                dbc.Col([
+                    dbc.Label('Overall Status: '),
+                ], width={"size": 2}),
+                dbc.Col([
+                    dcc.Dropdown(
+                        id='status-dropdown',
+                        options=[{'label': status, 'value': status} for status in studies['overall_status'].unique()],
+                        value=studies['overall_status'].unique()[0]
+                    ),
+                ], width={"size": 5}),
+            ]),
+            ], width={"size": 6}),
+            dbc.Row(
+                dbc.Col([
+                    dcc.Graph(id='bar-plot')
+                ])
+            )
     ])
 
     # Callback function to update the bar plot based on the selected status

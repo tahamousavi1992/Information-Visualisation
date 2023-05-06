@@ -13,7 +13,7 @@ def get_chart(app, studies, conditions):
         dbc.Col([
             dbc.Row([
                 dbc.Col([
-                    dbc.Label(' Top : '),
+                    dbc.Label('Top: '),
                 ], width={"size": 2}),
                 dbc.Col([
                     dcc.Dropdown(
