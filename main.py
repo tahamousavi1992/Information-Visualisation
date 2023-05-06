@@ -34,10 +34,12 @@ study_genders = list(studies['gender'].replace('All', 'Both male and female').fi
 study_genders.insert(0, 'All')
 
 app.layout = html.Div([
+    html.Br(),
     html.Div([
         dbc.Button('Volunteer', id='volunteer-button', n_clicks=0, color='primary', className='mr-2' , style={'margin-right': '10px'}),
         dbc.Button('Expert', id='expert-button', n_clicks=0, color='dark', className='mr-2'),
     ], style={'textAlign': 'center'}),
+    html.Br(),
     dbc.Row([
         dbc.Col(
             dcc.RangeSlider(
@@ -51,12 +53,16 @@ app.layout = html.Div([
             width={"size": 12}
         )
     ]),
+    html.Br(),
     html.Div([
         volunteer_studies.getChart(app, studies, sponsors, facilities, conditions, interventions)
     ], id='Volunteer-div'),
 
     html.Div([
         dbc.Row([
+            dbc.Col([
+                dbc.Label('Study Type: '),
+            ], width={"size": 1}),
             dbc.Col(
                 dcc.Dropdown(
                     id='study_type_dropdown',
@@ -64,8 +70,11 @@ app.layout = html.Div([
                     value=study_types[0],
                     placeholder="Select a study type"
                 ),
-                width={"size": 5, "offset": 1}
+                width={"size": 4}
             ),
+            dbc.Col([
+                dbc.Label('Gender: '),
+            ], width={"size": 1, "offset": 1}),
             dbc.Col(
                 dcc.Dropdown(
                     id='study_gender_dropdown',
@@ -73,7 +82,7 @@ app.layout = html.Div([
                     value=study_genders[0],
                     placeholder='Select a gender'
                 ),
-                width={"size": 5}
+                width={"size": 4}
             )
         ]
         ),
@@ -95,7 +104,7 @@ app.layout = html.Div([
         expert_numStudy_bar.getChart(app, facilities, studies),
 
     ], id='expert-div', style={'display': 'none'})
-])
+], style={'marginLeft': '5px'})
 
 @app.callback(
     Output('Volunteer-div', 'style'),
