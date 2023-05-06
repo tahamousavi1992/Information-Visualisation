@@ -41,8 +41,7 @@ def getChart(app, studies, facilities):
                             color='nct_id',
                             hover_name='country',
                             color_continuous_scale=px.colors.sequential.Plasma,
-                            labels={'nct_id': 'Number of Studies'},
-                            title=f'Number of Studies Per Country for {study_type}')
+                            labels={'nct_id': 'Number of Studies'})
 
 
         return fig
