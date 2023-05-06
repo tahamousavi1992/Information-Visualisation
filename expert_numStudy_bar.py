@@ -7,8 +7,6 @@ from dash.dependencies import Input, Output
 import extract
 import colorlover as cl
 import dash_bootstrap_components as dbc
-from scipy import interpolate
-import numpy as np
 
 def getChart(app, facilities, studies):
 

@@ -7,6 +7,7 @@ import colorlover as cl
 import colorsys
 import extract
 import dash_bootstrap_components as dbc
+import webcolors
 
 def get_chart(app, studies, conditions):
 
@@ -67,17 +68,7 @@ def get_chart(app, studies, conditions):
              orientation='h', text='study count', 
              title=f"Top {num_conditions} Conditions by Study Count")
 
-        def distribute_colors(colors):
-            num_colors = len(colors)
-            new_colors = [colors[i::num_colors//2] for i in range(num_colors//2)]
-            distributed_colors = [color for sublist in zip(*new_colors) for color in sublist]
-            return distributed_colors
-        
-        colors = cl.interp(cl.scales['9']['qual']['Pastel1'], 50)
-        # Reorder the colors
-        distributed_colors = distribute_colors(colors)
-        # pastel1 = cl.scales['9']['qual']['Pastel1']
-        # colors = pastel1 * 6
+        colors = cl.interp(cl.scales['9']['qual']['Pastel1'], num_conditions)
 
         # Create the plot
         fig = px.bar(top_conditions, x='study count', y='name',
@@ -86,11 +77,11 @@ def get_chart(app, studies, conditions):
 
         # Update the plot layout
         fig.update_layout(showlegend=False, yaxis={'categoryorder': 'total ascending'},
-                        plot_bgcolor='#f7f7f7', margin=dict(l=100, r=20, t=70, b=70), 
-                        xaxis_title='Number of Studies', yaxis_title='Condition')
+                          plot_bgcolor='#f7f7f7', margin=dict(l=100, r=20, t=70, b=70), 
+                          xaxis_title='Number of Studies', yaxis_title='Condition')
 
         # Update the trace colors and text positioning
-        fig.update_traces(marker_color=distributed_colors, texttemplate='%{text:.2s}', textposition='inside')
+        fig.update_traces(marker_color=colors, texttemplate='%{text:.2s}', textposition='inside')
 
         # Add a grid to the plot
         fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='lightgrey')
