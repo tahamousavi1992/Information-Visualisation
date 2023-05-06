@@ -10,22 +10,6 @@ import dash_bootstrap_components as dbc
 from scipy import interpolate
 import numpy as np
 
-def interpolate_color_scale(num_colors):
-    # Get a base color scale from colorlover
-    base_colors = cl.scales['9']['qual']['Pastel1']
-    
-    # Interpolate the colors to the desired number of colors
-    num_base_colors = len(base_colors)
-    interp_func = interpolate.interp1d(
-        range(num_base_colors), base_colors, axis=0, kind='cubic'
-    )
-    interp_colors = interp_func(
-        np.linspace(0, num_base_colors - 1, num_colors)
-    )
-    
-    # Return the interpolated color scale
-    return interp_colors.tolist()
-
 def getChart(app, facilities, studies):
 
     # Create a layout with a dropdown menu and a bar plot
@@ -59,6 +43,7 @@ def getChart(app, facilities, studies):
         Input('date-slider', 'value'),
         Input('study_type_dropdown', 'value'),
         Input('study_gender_dropdown', 'value'))
+    
     def update_bar_plot(selected_status, date_range, study_type, study_gender):
         filtered_studies = extract.filter_by_date(studies, date_range, study_type, study_gender)
         # Merge the dataframes
@@ -76,9 +61,10 @@ def getChart(app, facilities, studies):
 
         final_df = pd.concat([top_20_filtered, others_filtered], ignore_index=True)
 
-        colors = interpolate_color_scale(21)
+        colors = cl.interp(cl.scales['9']['qual']['Pastel1'], 21)
 
-        fig = px.bar(final_df.sort_values('count', ascending=False), x='country', y='count', text='count', color='country', color_discrete_sequence=colors)
+        fig = px.bar(final_df.sort_values('count', ascending=False), x='country', y='count', text='count', color='country',
+                      color_discrete_sequence=colors)
 
         fig.update_layout(showlegend=False, plot_bgcolor='#f7f7f7', margin=dict(l=100, r=20, t=70, b=70), xaxis_title='Top 20 Countries',
                            yaxis_title='Number of Studies')
