@@ -46,7 +46,7 @@ def getChart(app, studies: pd.DataFrame, design_groups: pd.DataFrame) -> html.Di
                 ),
                 bgcolor='#f7f7f7',
             ),
-            font=dict(size=16, color='black'),
+            font=dict(color='black'),
             showlegend=False,
         )
 

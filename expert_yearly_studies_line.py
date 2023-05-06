@@ -65,10 +65,6 @@ def getChart(app, studies, sponsors):
         fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='lightgrey')
         fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='lightgrey')
 
-        # Increase the font size of the text on the plot
-        fig.update_layout(font=dict(size=14))
-
-
         return fig
 
     return result
