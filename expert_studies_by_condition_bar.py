@@ -4,24 +4,38 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import extract
+import dash_bootstrap_components as dbc
 
 def get_chart(app, studies, conditions):
 
-    result = html.Div([
+    result = dbc.Row([
         html.H3("Top Conditions by Study Count"),
-        dcc.Dropdown(
-            id='num_conditions',
-            options=[
-                {'label': 'Top 5', 'value': 5},
-                {'label': 'Top 10', 'value': 10},
-                {'label': 'Top 20', 'value': 20},
-                {'label': 'Top 30', 'value': 30},
-                {'label': 'Top 40', 'value': 40},
-                {'label': 'Top 50', 'value': 50},
-            ],
-            value=5
-        ),
-        dcc.Graph(id='bar_top_conditions_chart'),
+        dbc.Col([
+            dbc.Row([
+                dbc.Col([
+                    dbc.Label(' Top : '),
+                ], width={"size": 2}),
+                dbc.Col([
+                    dcc.Dropdown(
+                        id='num_conditions',
+                        options=[
+                            {'label': 'Top 5', 'value': 5},
+                            {'label': 'Top 10', 'value': 10},
+                            {'label': 'Top 20', 'value': 20},
+                            {'label': 'Top 30', 'value': 30},
+                            {'label': 'Top 40', 'value': 40},
+                            {'label': 'Top 50', 'value': 50},
+                        ],
+                        value=5
+                    ),
+                ], width={"size": 5}),
+            ]),
+            ], width={"size": 6}),
+            dbc.Row(
+                dbc.Col([
+                    dcc.Graph(id='bar_top_conditions_chart'),
+                ])
+            )
     ])
 
     @app.callback(

@@ -97,11 +97,11 @@ app.layout = html.Div([
             expert_yearly_studies_line.getChart(app, studies, sponsors),
         ]),
         html.Br(),
-        expert_study_type_map.getChart(app, studies, facilities),
-        html.Br(),
         expert_studies_by_condition_bar.get_chart(app, studies, conditions),
         html.Br(),
         expert_numStudy_bar.getChart(app, facilities, studies),
+        html.Br(),
+        expert_study_type_map.getChart(app, studies, facilities),
 
     ], id='expert-div', style={'display': 'none'})
 ], style={'marginLeft': '5px'})
