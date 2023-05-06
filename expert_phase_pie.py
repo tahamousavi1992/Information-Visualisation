@@ -1,9 +1,9 @@
-import pandas as pd
 import plotly.express as px
 import dash_html_components as html
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
+import colorlover as cl
 import extract
 import pandas as pd
 
@@ -16,9 +16,19 @@ def getChart(app, studies):
         # Create a new column for the percentage of studies in each phase
         phase_dist['percent'] = round(phase_dist['counts'] / phase_dist['counts'].sum() * 100, 2)
 
-        # Plot pie chart of the percentage distribution of studies in each phase
-        expert_pie_phase = px.pie(phase_dist, values='percent', names='phase', title='Percentage Distribution of Studies in Each Phase',
-                                hover_data=['counts'], labels={'counts': '#studies'})
+        expert_pie_phase = px.pie(phase_dist, values='percent', names='phase', 
+                                title='Percentage Distribution of Studies in Each Phase',
+                                hover_data=['counts'], labels={'counts': '# Studies'})
+
+        # Define a colorblind-friendly color palette with 7 colors
+        colors = cl.scales['7']['qual']['Pastel1']
+
+        # Update the pie chart colors, text positioning, and text information
+        expert_pie_phase.update_traces(marker_colors=colors, textposition='inside', textinfo='percent+label', hole=0.3)
+
+        # Update the layout
+        expert_pie_phase.update_layout(title={'font': {'size': 24}}, font={'size': 16}, legend={'font': {'size': 14}}, plot_bgcolor='#f7f7f7')
+        
         return expert_pie_phase
 
     # Define the layout of the app
