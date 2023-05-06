@@ -3,6 +3,8 @@ import plotly.express as px
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+import colorlover as cl
+import colorsys
 import extract
 
 def get_chart(app, studies, conditions):
@@ -43,10 +45,44 @@ def get_chart(app, studies, conditions):
 
         top_conditions = condition_counts.head(num_conditions)
 
-        fig = px.bar(top_conditions, x='study count', y='name',
+        '''fig = px.bar(top_conditions, x='study count', y='name',
                     text='study count', orientation='h', title=f"Top {num_conditions} Conditions by Study Count")
         fig.update_layout(showlegend=False, yaxis={'categoryorder': 'total ascending'})
-        fig.update_traces(texttemplate='%{text:.2s}', textposition='inside')
+        fig.update_traces(texttemplate='%{text:.2s}', textposition='inside')'''
+        fig = px.bar(top_conditions, x='study count', y='name',
+             orientation='h', text='study count', 
+             title=f"Top {num_conditions} Conditions by Study Count")
+
+        def distribute_colors(colors):
+            num_colors = len(colors)
+            new_colors = [colors[i::num_colors//2] for i in range(num_colors//2)]
+            distributed_colors = [color for sublist in zip(*new_colors) for color in sublist]
+            return distributed_colors
+        
+        colors = cl.interp(cl.scales['9']['qual']['Pastel1'], 50)
+        # Reorder the colors
+        distributed_colors = distribute_colors(colors)
+        # pastel1 = cl.scales['9']['qual']['Pastel1']
+        # colors = pastel1 * 6
+
+        # Create the plot
+        fig = px.bar(top_conditions, x='study count', y='name',
+                    orientation='h', text='study count', 
+                    title=f"Top {num_conditions} Conditions by Study Count")
+
+        # Update the plot layout
+        fig.update_layout(showlegend=False, yaxis={'categoryorder': 'total ascending'},
+                        plot_bgcolor='#f7f7f7', margin=dict(l=100, r=20, t=70, b=70), 
+                        xaxis_title='Number of Studies', yaxis_title='Condition')
+
+        # Update the trace colors and text positioning
+        fig.update_traces(marker_color=distributed_colors, texttemplate='%{text:.2s}', textposition='inside')
+
+        # Add a grid to the plot
+        fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='lightgrey')
+
+        # Increase the font size of the text on the plot
+        fig.update_layout(font=dict(size=14))
 
         return fig
 
