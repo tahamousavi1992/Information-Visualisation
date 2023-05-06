@@ -59,10 +59,8 @@ def getChart(app, studies, design_groups):
 
         # Add a grid to the plot
         fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='lightgrey')
-
-        fig.update_traces(
-            hovertemplate="Status: %{x}<br>#Studies: %{y}"
-        )
+        
+        fig.update_traces(hovertemplate="Status: %{x}<br>#Studies: %{y}")
         return fig
 
     return result
