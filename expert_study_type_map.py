@@ -4,6 +4,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.express as px
 import extract
+import dash_bootstrap_components as dbc
 
 def getChart(app, studies, facilities):
     def get_country_code(country_name):
@@ -41,12 +42,14 @@ def getChart(app, studies, facilities):
                             hover_name='country',
                             color_continuous_scale=px.colors.sequential.Plasma,
                             labels={'nct_id': 'Number of Studies'},
-                            title=f'Number of Studies by Country for {study_type}')
+                            title=f'Number of Studies Per Country for {study_type}')
+
+
         return fig
 
-    result_div = html.Div([
-    html.H3("Choropleth Map of Studies by Study Type"),
-    dcc.Graph(id='choropleth_map')
+    result_div = dbc.Row([
+    html.H3("Choropleth Map of Studies Per Country"),
+    dbc.Col([dcc.Graph(id='choropleth_map')], width={"size": 12}),
     ])
 
     @app.callback(

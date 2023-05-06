@@ -14,25 +14,6 @@ def getChart(app, studies: pd.DataFrame, design_groups: pd.DataFrame) -> html.Di
         # Group the dataframe by 'intervention_type' and count the number of 'nct_id'
         counts = merged_df.groupby('group_type')['nct_id'].count().reset_index()
 
-        '''# Create a radar plot using Plotly
-        fig = go.Figure(go.Scatterpolar(
-            r=counts['nct_id'],
-            theta=counts['group_type'],
-            mode='lines',
-            fill='toself',
-
-        ))
-
-        # Set up the layout for the radar plot
-        fig.update_layout(
-            polar=dict(
-                radialaxis=dict(
-                    visible=True,
-                    range=[0, counts['nct_id'].max()]
-                )),
-            showlegend=False
-        )'''
-
         # Choose a colorblind-friendly color palette
         colors = px.colors.sequential.Viridis
 
@@ -80,7 +61,7 @@ def getChart(app, studies: pd.DataFrame, design_groups: pd.DataFrame) -> html.Di
 
     # Return the layout containing the radar plot
     result =  dbc.Col(html.Div([
-        html.H3("Radar Chart of Group Types"),
+        html.H3("Number of Studies Per Group Type"),
         dcc.Graph(id='intervention-radar-plot')
     ]),
     )
@@ -90,7 +71,7 @@ def getChart(app, studies: pd.DataFrame, design_groups: pd.DataFrame) -> html.Di
         Input('date-slider', 'value'),
         Input('study_type_dropdown', 'value'),
         Input('study_gender_dropdown', 'value'))
-    
+
     def update_pie_chart(date_range, study_type, study_gender):
         return get_intervention_radar_plot(date_range, study_type, study_gender)
 
