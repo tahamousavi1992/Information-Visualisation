@@ -29,7 +29,6 @@ def getChart(app, studies, design_groups):
                 ),
             ], width={"size": 5}),
         ]),
-
         dcc.Graph(id='bar_status_chart')
     ])
 
