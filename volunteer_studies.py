@@ -61,7 +61,7 @@ def getChart(app, studies, sponsors, facilities, conditions, interventions):
                 html.H2("List of Studies"),
                 dash_table.DataTable(
                     id='studies-table',
-                    columns=[{"name": col, "id": col} for col in ['nct_id', 'study_first_submitted_date', 'official_title', 'facility']],
+                    columns=[{"name": col.replace("_", " "), "id": col} for col in ['nct_id', 'study_first_submitted_date', 'official_title', 'facility']],
                     page_current=0,
                     page_size=10,
                     page_action='custom',
@@ -138,7 +138,7 @@ def getChart(app, studies, sponsors, facilities, conditions, interventions):
             selected_study = pd.DataFrame(data).iloc[selected_rows[0]]
             return html.Table(
                 [html.Tr([
-                    html.Th(col, style={'border': '1px solid black', 'padding': '5px', 'textAlign': 'left'}),
+                    html.Th(col.replace("_", " "), style={'border': '1px solid black', 'padding': '5px', 'textAlign': 'left'}),
                     html.Td(selected_study[col], style={'border': '1px solid black', 'padding': '5px', 'textAlign': 'left'})
                 ]) for col in selected_study.index],
                 style={'borderCollapse': 'collapse'}
