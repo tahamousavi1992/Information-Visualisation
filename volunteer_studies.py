@@ -10,6 +10,14 @@ import extract
 extended_studies_path = 'data/extended-studies.csv'
 
 def getChart(app, studies, sponsors, facilities, conditions, interventions):
+    def to_camel_case(string):
+        words = string.replace("_", " ").split()
+        # capitalize the first letter of each word except the first word
+        camel_case_words = [words[0].capitalize()] + [word.capitalize() for word in words[1:]]
+        # join the words to form a camel case string
+        camel_case_string = " ".join(camel_case_words)
+        return camel_case_string
+
     def getExtended_studies(studies, sponsors, facilities, conditions, interventions):
         if os.path.exists(extended_studies_path):
             print('Loading extended studies from file...')
@@ -55,13 +63,13 @@ def getChart(app, studies, sponsors, facilities, conditions, interventions):
         html.Link(rel="stylesheet", href="data:text/css;charset=utf-8,"
                                         " .dash-filter input {"
                                         "     text-align: left !important;"
-                                        " }", type="text/css"),
+                                        " } [data-dash-column=\"study_first_submitted_date\"] { text-align: center !important;;}", type="text/css"),
         dbc.Row([
             dbc.Col([
                 html.H2("List of Studies"),
                 dash_table.DataTable(
                     id='studies-table',
-                    columns=[{"name": col.replace("_", " "), "id": col} for col in ['nct_id', 'study_first_submitted_date', 'official_title', 'facility']],
+                    columns=[{"name": to_camel_case(col), "id": col} for col in ['nct_id', 'study_first_submitted_date', 'official_title', 'facility']],
                     page_current=0,
                     page_size=10,
                     page_action='custom',
@@ -75,6 +83,16 @@ def getChart(app, studies, sponsors, facilities, conditions, interventions):
                     style_filter={'direction': 'ltr','textAlign': 'left'},
                     filter_query='',
                     row_selectable="single",
+                    style_data_conditional=[
+                        {
+                            'if': {'row_index': 'odd'},
+                            'backgroundColor': '#f7f7f7'
+                        },
+                        {
+                            'if': {'row_index': 'even'},
+                            'backgroundColor': 'white'
+                        },
+                    ],
                 ),
             ], width=12)
         ]),
@@ -136,13 +154,19 @@ def getChart(app, studies, sponsors, facilities, conditions, interventions):
     def display_study_details(selected_rows, data):
         if selected_rows and selected_rows[0] is not None:
             selected_study = pd.DataFrame(data).iloc[selected_rows[0]]
-            return html.Table(
-                [html.Tr([
-                    html.Th(col.replace("_", " "), style={'border': '1px solid black', 'padding': '5px', 'textAlign': 'left'}),
-                    html.Td(selected_study[col], style={'border': '1px solid black', 'padding': '5px', 'textAlign': 'left'})
-                ]) for col in selected_study.index],
-                style={'borderCollapse': 'collapse'}
-            )
+            return  html.Table(
+                        [
+                            html.Tr(
+                                [
+                                    html.Th(to_camel_case(col), style={'border': '1px solid black', 'padding': '5px', 'textAlign': 'left'}),
+                                    html.Td(selected_study[col], style={'border': '1px solid black', 'padding': '5px', 'textAlign': 'left'})
+                                ],
+                                style={'backgroundColor': '#f7f7f7'} if idx % 2 == 0 else {}
+                            )
+                            for idx, col in enumerate(selected_study.index)
+                        ],
+                        style={'borderCollapse': 'collapse'}
+                    )
         return "Please select a study from the table."
 
     return result
