@@ -90,9 +90,6 @@ def get_chart(app, studies, conditions):
         # Add a grid to the plot
         fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='lightgrey')
 
-        # Increase the font size of the text on the plot
-        fig.update_layout(font=dict(size=14))
-
         return fig
 
     return result
