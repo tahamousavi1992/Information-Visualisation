@@ -26,7 +26,7 @@ def getChart(app, studies):
         expert_pie_phase.update_traces(marker_colors=colors, textposition='inside', textinfo='percent+label', hole=0.3)
 
         # Update the layout
-        expert_pie_phase.update_layout(title={'font': {'size': 24}}, font={'size': 16}, legend={'font': {'size': 14}}, plot_bgcolor='#f7f7f7')
+        expert_pie_phase.update_layout(plot_bgcolor='#f7f7f7')
 
         return expert_pie_phase
 

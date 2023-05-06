@@ -32,14 +32,12 @@ def getChart(app, studies: pd.DataFrame, design_groups: pd.DataFrame) -> html.Di
                 radialaxis=dict(
                     visible=True,
                     range=[0, counts['nct_id'].max()],
-                    tickfont=dict(size=14),
                     showline=False,
                     gridcolor='lightgrey',
                     gridwidth=1,
                 ),
                 angularaxis=dict(
                     visible=True,
-                    tickfont=dict(size=14),
                     showline=True,
                     linewidth=2,
                     linecolor='lightgrey',
