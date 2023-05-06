@@ -39,17 +39,36 @@ def getChart(app, studies, sponsors):
         Input('date-slider', 'value'),
         Input('study_type_dropdown', 'value'),
         Input('study_gender_dropdown', 'value'))
+    
     def update_line_chart(selected_sponsor, date_range, study_type, study_gender):
         filtered_studies = extract.filter_by_date(studies, date_range, study_type, study_gender)
         if selected_sponsor != 'All':
             studies_with_selected_sponsor = sponsors[sponsors['name'] == selected_sponsor]['nct_id']
             filtered_studies = filtered_studies[filtered_studies['nct_id'].isin(studies_with_selected_sponsor)]
         yearly_study_count = filtered_studies.groupby('year')['nct_id'].count().reset_index()
-        fig = px.line(yearly_study_count, x='year', y='nct_id', title='Number of Studies per Year')
-        fig.update_yaxes(title_text='number of studies')
+
+        fig = px.line(yearly_study_count, x='year', y='nct_id', title='#Studies/Year for {}'.format(selected_sponsor))
+        fig.update_yaxes(title_text='Number of Studies')
+        fig.update_xaxes(title_text='Year')
         fig.update_traces(
-            hovertemplate="Year: %{x}<br>Count: %{y}"
+            hovertemplate="Year: %{x}<br>#Studies: %{y}",
+            line=dict(width=3, color='#3A5FCD'),
         )
+
+        # Update the plot layout
+        fig.update_layout(
+            plot_bgcolor='#f7f7f7',
+            margin=dict(l=100, r=20, t=70, b=70),
+        )
+
+        # Add a grid to the plot
+        fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='lightgrey')
+        fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='lightgrey')
+
+        # Increase the font size of the text on the plot
+        fig.update_layout(font=dict(size=14))
+
+
         return fig
 
     return result
