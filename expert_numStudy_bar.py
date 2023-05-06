@@ -76,6 +76,7 @@ def getChart(app, facilities, studies):
 
         final_df = pd.concat([top_20_filtered, others_filtered], ignore_index=True)
 
+<<<<<<< HEAD
         colors = interpolate_color_scale(21)
         fig = px.bar(final_df, x='country', y='count', text='count', color='country', color_discrete_sequence=colors)
 
@@ -91,5 +92,10 @@ def getChart(app, facilities, studies):
         fig.update_traces(hovertemplate='Country: %{x}<br>#Studies: %{y}')
 
         return fig
+=======
+        figure = px.bar(final_df.sort_values('count', ascending=False), x='country', y='count', title='Number of Studies by Country', text='count')
+
+        return figure
+>>>>>>> 6c9089ac8e783870ebcc437711300179e3164abd
 
     return layout
