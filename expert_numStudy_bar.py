@@ -56,7 +56,8 @@ def getChart(app, facilities, studies):
 
         final_df = pd.concat([top_20_filtered, others_filtered], ignore_index=True)
 
-        figure = px.bar(final_df, x='country', y='count', title='Number of Studies by Country', text='count')
+        figure = px.bar(final_df.sort_values('count', ascending=False), x='country', y='count', title='Number of Studies by Country', text='count')
+
         return figure
 
     return layout
