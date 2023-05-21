@@ -10,6 +10,7 @@ import extract
 extended_studies_path = 'data/extended-studies.csv'
 
 def getChart(app, studies, sponsors, facilities, conditions, interventions):
+    studies = studies[studies['overall_status'] == 'Recruiting']
     def to_camel_case(string):
         words = string.replace("_", " ").split()
         # capitalize the first letter of each word except the first word
@@ -58,6 +59,7 @@ def getChart(app, studies, sponsors, facilities, conditions, interventions):
         return studies
 
     studies = getExtended_studies(studies, sponsors, facilities, conditions, interventions)
+    studies = studies[studies['overall_status'] == 'Recruiting']
 
     result = html.Div([
         html.Link(rel="stylesheet", href="data:text/css;charset=utf-8,"
