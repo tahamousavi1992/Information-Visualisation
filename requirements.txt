@@ -1,0 +1,5 @@
+pycountry
+dash
+plotly
+colorlover
+webcolors
